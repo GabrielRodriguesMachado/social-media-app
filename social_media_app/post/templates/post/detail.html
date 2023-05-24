@@ -30,6 +30,14 @@
         <span class="ml-3">{{ comments.count }} people are Tweeting about this</span>
       </div>
     </div>
+    {% if request.user == post.created_by %}
+      <div class="mt-6 p-6 py-3 bg-teal-500 rounded-xl inline-block text-lg font-semibold text-white">
+        <a href="#">Edit post</a>
+      </div>
+      <div class="mt-6 p-6 py-3 bg-red-500 rounded-xl inline-block text-lg font-semibold text-white">
+        <a href="{% url 'post:delete_post' post.pk %}">Delete post</a>
+      </div>
+    {% endif %}
   </div>
 
   <div class="ml-10 flex flex-col">

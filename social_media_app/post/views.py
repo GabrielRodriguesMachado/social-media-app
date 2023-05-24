@@ -46,3 +46,11 @@ def new_post(request):
         form = PostForm()
 
     return render(request, "post/new_post.html", {"form": form})
+
+
+@login_required
+def delete_post(request, pk):
+    item = get_object_or_404(Post, pk=pk, created_by=request.user)
+    item.delete()
+
+    return redirect("dashboard:index")
