@@ -9,3 +9,6 @@ class Post(models.Model):
     content = models.TextField()
     image = models.ImageField(upload_to="post_images", blank=True, null=True)
     date_posted = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Posted by {self.created_by.username}"
