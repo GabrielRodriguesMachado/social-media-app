@@ -1,3 +1,11 @@
+from django.contrib.auth.models import User
 from django.db import models
 
-# Create your models here.
+
+class Post(models.Model):
+    created_by = models.ForeignKey(
+        User, related_name="posts", on_delete=models.CASCADE
+    )
+    content = models.TextField()
+    image = models.ImageField(upload_to="post_images", blank=True, null=True)
+    date_posted = models.DateTimeField(auto_now_add=True)
