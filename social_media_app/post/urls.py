@@ -8,4 +8,5 @@ app_name = "post"
 urlpatterns = [
     path("<int:pk>/", views.detail, name="detail"),
     path("<int:pk>/add_comment/", views.add_comment, name="add_comment"),
+    path("new_post/", views.new_post, name="new_post")
 ]
