@@ -34,6 +34,16 @@ class PostViewsTest(TestCase):
             created_by=self.user, content="Test content"
         )
 
+    def test_index_view(self):
+        response = self.client.get(reverse("index"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "core/index.html")
+        self.assertQuerysetEqual(
+            response.context["posts"],
+            ["Posted by testuser"],
+            transform=str,
+        )
+
     def test_contact_view(self):
         response = self.client.get(reverse("contact"))
         self.assertEqual(response.status_code, 200)
