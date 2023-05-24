@@ -54,3 +54,20 @@ def delete_post(request, pk):
     item.delete()
 
     return redirect("dashboard:index")
+
+
+@login_required
+def edit_post(request, pk):
+    post = get_object_or_404(Post, pk=pk, created_by=request.user)
+    if request.method == "POST":
+        form = PostForm(request.POST, request.FILES, instance=post)
+        if form.is_valid():
+            post.save()
+
+            return redirect("post:detail", pk=post.pk)
+    else:
+        form = PostForm(instance=post)
+
+    return render(
+        request, "post/new_post.html", {"form": form, "title": "Edit Post"}
+    )
