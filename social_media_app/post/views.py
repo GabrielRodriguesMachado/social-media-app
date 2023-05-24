@@ -5,4 +5,7 @@ from .models import Post
 
 def detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
-    return render(request, "post/detail.html", {"post": post})
+    comments = post.comments.all()
+    return render(
+        request, "post/detail.html", {"post": post, "comments": comments}
+    )

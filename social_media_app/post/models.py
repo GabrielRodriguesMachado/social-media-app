@@ -12,3 +12,17 @@ class Post(models.Model):
 
     def __str__(self):
         return f"Posted by {self.created_by.username}"
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(
+        Post, related_name="comments", on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        User, related_name="comments", on_delete=models.CASCADE
+    )
+    content = models.TextField()
+    date_commented = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comment by {self.user.username} on {self.post}"
