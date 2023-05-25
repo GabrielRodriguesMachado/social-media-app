@@ -6,7 +6,9 @@ from .forms import SignupForm
 
 
 def index(request):
-    posts = Post.objects.annotate(comment_count=Count("comments")).all()[:10]
+    posts = Post.objects.annotate(comment_count=Count("comments")).all()[
+        :10:-1
+    ]
 
     return render(request, "core/index.html", {"posts": posts})
 

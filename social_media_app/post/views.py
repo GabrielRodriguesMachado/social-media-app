@@ -1,8 +1,25 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
+from django.contrib.auth.models import User
 
 from .models import Post
 from .forms import CommentForm, PostForm
+
+
+def posts(request):
+    query = request.GET.get("query", "")
+    posts = Post.objects.annotate(comment_count=Count("comments")).all()[::-1]
+    users = User.objects.filter(username__icontains=query).all()
+
+    if query:
+        posts = [post for post in posts if query in post.content]
+
+    return render(
+        request,
+        "post/posts.html",
+        {"posts": posts, "query": query, "users": users},
+    )
 
 
 def detail(request, pk):
