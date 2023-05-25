@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "core",
     "post",
     "dashboard",
+    "conversation",
 ]
 
 MIDDLEWARE = [
