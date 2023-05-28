@@ -7,10 +7,15 @@ from .models import Post
 from .forms import CommentForm, PostForm
 
 
+@login_required
 def posts(request):
     query = request.GET.get("query", "")
     posts = Post.objects.annotate(comment_count=Count("comments")).all()[::-1]
-    users = User.objects.filter(username__icontains=query).all()
+    users = (
+        User.objects.filter(username__icontains=query)
+        .exclude(id=request.user.id)
+        .all()
+    )
 
     if query:
         posts = [post for post in posts if query in post.content]
