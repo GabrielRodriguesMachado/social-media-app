@@ -58,11 +58,16 @@ def follow_user(request, user_id):
         request.user, user
     )
 
+    paginator = Paginator(posts, 10)
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     return render(
         request,
         "dashboard/index.html",
         {
-            "posts": posts,
+            "posts": page_obj,
             "user": user,
             "following": following_users,
             "is_following": is_following,
@@ -78,11 +83,16 @@ def unfollow_user(request, user_id):
         request.user, user
     )
 
+    paginator = Paginator(posts, 10)
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
     return render(
         request,
         "dashboard/index.html",
         {
-            "posts": posts,
+            "posts": page_obj,
             "user": user,
             "following": following_users,
             "is_following": is_following,
