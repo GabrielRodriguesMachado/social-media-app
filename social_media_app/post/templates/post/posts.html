@@ -55,6 +55,15 @@
           </div>
         </div>
     {% endfor %}
+    <div class="pagination flex items-center justify-center mt-6">
+      {% if posts.has_previous %}
+          <a href="?page={{ posts.previous_page_number }}" class="mr-2 px-4 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300">Previous</a>
+      {% endif %}
+      <span class="current-page px-4 py-2 bg-blue-500 text-white">{{ posts.number }}</span>
+      {% if posts.has_next %}
+          <a href="?page={{ posts.next_page_number }}" class="ml-2 px-4 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300">Next</a>
+      {% endif %}
+    </div>
   </div>
   <div class="col-span-1 bg-gray-50">
     <div class="dark:bg-black p-10">

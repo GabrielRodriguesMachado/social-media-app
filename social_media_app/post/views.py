@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 
 from .models import Post
 from .forms import CommentForm, PostForm
@@ -12,11 +13,9 @@ def posts(request):
     query = request.GET.get("query", "")
     user = request.user
 
-    posts = Post.objects.annotate(comment_count=Count("comments")).all()[::-1]
-
-    for post in posts:
-        post.like_count = post.likes.count()
-        post.has_liked = post.likes.filter(user=user).exists()
+    all_posts = Post.objects.annotate(
+        comment_count=Count("comments")
+    ).order_by("-date_posted")
 
     users = (
         User.objects.filter(username__icontains=query)
@@ -25,12 +24,21 @@ def posts(request):
     )
 
     if query:
-        posts = [post for post in posts if query in post.content]
+        all_posts = all_posts.filter(content__icontains=query)
+
+    paginator = Paginator(all_posts, 10)
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    for post in page_obj:
+        post.like_count = post.likes.count()
+        post.has_liked = post.likes.filter(user=user).exists()
 
     return render(
         request,
         "post/posts.html",
-        {"posts": posts, "query": query, "users": users},
+        {"posts": page_obj, "query": query, "users": users},
     )
 
 
