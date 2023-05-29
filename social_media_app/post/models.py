@@ -9,21 +9,6 @@ class Post(models.Model):
     content = models.TextField()
     image = models.ImageField(upload_to="post_images", blank=True, null=True)
     date_posted = models.DateTimeField(auto_now_add=True)
-    likes = models.ManyToManyField(
-        User, related_name="liked_posts", blank=True
-    )
-
-    def like_post(self, user):
-        self.likes.add(user)
-
-    def unlike_post(self, user):
-        self.likes.remove(user)
-
-    def is_liked_by(self, user):
-        return self.likes.filter(id=user.id).exists()
-
-    def get_like_count(self):
-        return self.likes.count()
 
     def __str__(self):
         return f"Posted by {self.created_by.username}"
@@ -41,3 +26,16 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.user.username} on {self.post}"
+
+
+class Like(models.Model):
+    post = models.ForeignKey(
+        Post, related_name="likes", on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        User, related_name="likes", on_delete=models.CASCADE
+    )
+    date_liked = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Like by {self.user.username} on {self.post}"

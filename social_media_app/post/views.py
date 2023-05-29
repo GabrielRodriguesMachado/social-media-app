@@ -10,10 +10,17 @@ from .forms import CommentForm, PostForm
 @login_required
 def posts(request):
     query = request.GET.get("query", "")
+    user = request.user
+
     posts = Post.objects.annotate(comment_count=Count("comments")).all()[::-1]
+
+    for post in posts:
+        post.like_count = post.likes.count()
+        post.has_liked = post.likes.filter(user=user).exists()
+
     users = (
         User.objects.filter(username__icontains=query)
-        .exclude(id=request.user.id)
+        .exclude(id=user.id)
         .all()
     )
 
@@ -27,9 +34,13 @@ def posts(request):
     )
 
 
+@login_required
 def detail(request, pk):
     post = get_object_or_404(Post, pk=pk)
     comments = post.comments.all()
+    post.like_count = post.likes.count()
+    post.has_liked = post.likes.filter(user=request.user).exists()
+
     return render(
         request, "post/detail.html", {"post": post, "comments": comments}
     )
@@ -93,3 +104,37 @@ def edit_post(request, pk):
     return render(
         request, "post/new_post.html", {"form": form, "title": "Edit Post"}
     )
+
+
+@login_required
+def like_post(request, pk, action):
+    post = get_object_or_404(Post, pk=pk)
+    post.likes.get_or_create(user=request.user)
+
+    if action == "detail":
+        return redirect("post:detail", pk=post.pk)
+    elif action == "posts":
+        return redirect("post:posts")
+    elif action == "dashboard":
+        return redirect("dashboard:index")
+    elif action == "profile":
+        return redirect("dashboard:profile", user_id=post.created_by.id)
+    else:
+        return redirect("core:index")
+
+
+@login_required
+def unlike_post(request, pk, action):
+    post = get_object_or_404(Post, pk=pk)
+    post.likes.filter(user=request.user).delete()
+
+    if action == "detail":
+        return redirect("post:detail", pk=post.pk)
+    elif action == "posts":
+        return redirect("post:posts")
+    elif action == "dashboard":
+        return redirect("dashboard:index")
+    elif action == "profile":
+        return redirect("dashboard:profile", user_id=post.created_by.id)
+    else:
+        return redirect("core:index")

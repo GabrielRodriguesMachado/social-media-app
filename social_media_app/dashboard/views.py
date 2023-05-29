@@ -9,7 +9,11 @@ from .models import Follow
 
 @login_required
 def index(request):
-    posts = Post.objects.filter(created_by=request.user).all()
+    posts = Post.objects.filter(created_by=request.user).all()[::-1]
+
+    for post in posts:
+        post.like_count = post.likes.count()
+        post.has_liked = post.likes.filter(user=request.user).exists()
 
     following_users = User.objects.filter(
         followers__follower=request.user
@@ -82,9 +86,13 @@ def profile_view(request, user_id):
         request.user, user
     )
 
+    for post in posts:
+        post.like_count = post.likes.count()
+        post.has_liked = post.likes.filter(user=request.user).exists()
+
     return render(
         request,
-        "dashboard/index.html",
+        "dashboard/profile.html",
         {
             "posts": posts,
             "user": user,

@@ -12,20 +12,18 @@ from django.contrib.auth.decorators import login_required
 def index(request):
     user = request.user
 
-    if user.is_authenticated:
-        following_users = Follow.objects.filter(follower=user).values_list(
-            "following", flat=True
-        )
-        posts = (
-            Post.objects.exclude(created_by=user)
-            .filter(created_by__in=following_users)
-            .annotate(comment_count=Count("comments"))
-            .all()[:10:-1]
-        )
-    else:
-        posts = Post.objects.annotate(comment_count=Count("comments")).all()[
-            :10:-1
-        ]
+    following_users = Follow.objects.filter(follower=user).values_list(
+        "following", flat=True
+    )
+    posts = (
+        Post.objects.exclude(created_by=user)
+        .filter(created_by__in=following_users)
+        .annotate(comment_count=Count("comments"))
+        .all()[:10:-1]
+    )
+    for post in posts:
+        post.like_count = post.likes.count()
+        post.has_liked = post.likes.filter(user=user).exists()
 
     return render(request, "core/index.html", {"posts": posts})
 
