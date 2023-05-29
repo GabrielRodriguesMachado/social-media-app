@@ -3,5 +3,8 @@
 {% block title %}Conversation{% endblock title %}
 
 {% block content %}
-<h1 class="mb-6 text-3xl">Conversation</h1>
+  <h1 class="mb-6 text-3xl">Conversation</h1>
+  {% for message in messages %}
+    <p>{{ message.content }}</p>
+  {% endfor %}
 {% endblock content %}

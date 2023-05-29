@@ -1,0 +1,12 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Conversation list{% endblock title %}
+
+{% block content %}
+  <h1 class="mb-6 text-3xl">Conversation list</h1>
+  {% for conversation in conversations %}
+      {% for member in conversation.members.all %}
+        <a href="{% url 'conversation:show_conversation' conversation_id=conversation.id %}">{{ member.username }}</a>
+      {% endfor %}
+  {% endfor %}
+{% endblock content %}
